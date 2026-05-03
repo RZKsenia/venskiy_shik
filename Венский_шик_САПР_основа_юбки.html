@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Венский шик — Построитель конструкции юбки</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@400;600;700&family=EB+Garamond:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --gold: #b8860b; --gold-light: #d4a843; --burgundy: #6b1d2a;
+    --burgundy-dark: #4a0e1c; --cream: #f5f0e8; --cream-dark: #e8dcc8;
+    --brown: #3e2723; --brown-light: #5d4037; --parchment: #faf6ee;
+  }
+  body { font-family: 'Cormorant Garamond', Georgia, serif; background: var(--cream); color: var(--brown); overflow: hidden; height: 100vh; font-size: 18px; }
+  .app-container { display: flex; height: 100vh; width: 100vw; }
+  .left-panel { width: 360px; min-width: 360px; background: linear-gradient(180deg, var(--parchment), var(--cream-dark)); border-right: 3px double var(--gold); display: flex; flex-direction: column; overflow-y: auto; z-index: 10; box-shadow: 4px 0 15px rgba(0,0,0,0.1); }
+  .panel-header { text-align: center; padding: 28px 20px 20px; border-bottom: 2px solid var(--gold-light); background: linear-gradient(180deg, var(--burgundy-dark), var(--burgundy)); color: var(--gold-light); }
+  .panel-header h1 { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; text-shadow: 1px 1px 3px rgba(0,0,0,0.4); margin-bottom: 6px; }
+  .panel-header .subtitle { font-size: 16px; font-style: italic; color: var(--cream); letter-spacing: 1px; opacity: 0.9; }
+  .header-ornament { margin-top: 10px; font-size: 22px; color: var(--gold-light); letter-spacing: 8px; }
+  .measurements-section { padding: 24px 22px; flex: 1; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--burgundy); border-bottom: 2px solid var(--gold-light); padding-bottom: 8px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; }
+  .input-group { margin-bottom: 22px; }
+  .input-group label { display: block; font-size: 20px; font-weight: 700; color: var(--brown-light); margin-bottom: 6px; }
+  .input-group .hint { font-size: 15px; color: var(--brown-light); opacity: 0.7; font-style: italic; margin-bottom: 6px; }
+  .input-group input[type="number"] { width: 100%; padding: 14px 18px; font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 700; border: 2px solid var(--gold-light); border-radius: 6px; background: var(--parchment); color: var(--brown); outline: none; transition: all 0.3s; }
+  .input-group input[type="number"]:focus { border-color: var(--gold); box-shadow: 0 0 12px rgba(184,134,11,0.3); background: #fff; }
+  .input-group .unit { font-size: 16px; color: var(--brown-light); margin-top: 4px; }
+  .input-group select { width: 100%; padding: 14px 18px; font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 700; border: 2px solid var(--gold-light); border-radius: 6px; background: var(--parchment); color: var(--brown); outline: none; transition: all 0.3s; cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0,0 L6,8 L12,0' fill='%23b8860b'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 40px; }
+  .input-group select:focus { border-color: var(--gold); box-shadow: 0 0 12px rgba(184,134,11,0.3); background-color: #fff; }
+  .toggle-group { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
+  .toggle-group label { font-size: 18px; font-weight: 600; color: var(--brown-light); }
+  .toggle-switch { position: relative; width: 56px; height: 30px; }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--cream-dark); border: 2px solid var(--gold-light); border-radius: 30px; transition: 0.3s; }
+  .toggle-slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 2px; bottom: 2px; background: var(--gold-light); border-radius: 50%; transition: 0.3s; }
+  .toggle-switch input:checked + .toggle-slider { background: var(--burgundy); border-color: var(--gold); }
+  .toggle-switch input:checked + .toggle-slider:before { transform: translateX(26px); background: var(--gold-light); }
+  .btn { display: block; width: 100%; padding: 16px 24px; font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; border: none; border-radius: 6px; cursor: pointer; transition: all 0.3s; margin-bottom: 14px; }
+  .btn-primary { background: linear-gradient(180deg, var(--burgundy), var(--burgundy-dark)); color: var(--gold-light); border: 2px solid var(--gold); }
+  .btn-primary:hover { background: linear-gradient(180deg, var(--burgundy-dark), #3a0a14); box-shadow: 0 4px 16px rgba(107,29,42,0.5); transform: translateY(-2px); }
+  .btn-secondary { background: linear-gradient(180deg, var(--gold-light), var(--gold)); color: var(--burgundy-dark); border: 2px solid var(--gold); }
+  .btn-secondary:hover { box-shadow: 0 4px 16px rgba(184,134,11,0.5); transform: translateY(-2px); }
+  .btn-outline { background: transparent; color: var(--burgundy); border: 2px solid var(--gold-light); font-size: 18px; letter-spacing: 2px; }
+  .btn-outline:hover { background: var(--gold-light); color: var(--burgundy-dark); }
+  .fabric-info { padding: 20px 22px; border-top: 2px solid var(--gold-light); background: rgba(184,134,11,0.05); }
+  .fabric-info .info-block { margin-bottom: 16px; padding: 14px 16px; background: var(--parchment); border: 1px solid var(--gold-light); border-radius: 6px; font-size: 17px; line-height: 1.6; }
+  .fabric-info .info-block strong { color: var(--burgundy); font-family: 'Playfair Display', serif; font-size: 18px; }
+  .fabric-info .info-block .value { font-size: 24px; font-weight: 700; color: var(--gold); font-family: 'Playfair Display', serif; }
+  .main-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+  .toolbar { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; background: linear-gradient(180deg, var(--parchment), var(--cream)); border-bottom: 2px solid var(--gold-light); z-index: 5; }
+  .toolbar-group { display: flex; align-items: center; gap: 12px; }
+  .toolbar-btn { padding: 10px 20px; font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 700; background: var(--parchment); border: 2px solid var(--gold-light); border-radius: 6px; cursor: pointer; color: var(--brown); transition: all 0.2s; }
+  .toolbar-btn:hover { background: var(--gold-light); color: var(--burgundy-dark); }
+  .toolbar-btn.active { background: var(--burgundy); color: var(--gold-light); border-color: var(--gold); }
+  .zoom-display { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--brown-light); min-width: 80px; text-align: center; }
+  .svg-container { flex: 1; overflow: hidden; position: relative; background: var(--parchment); cursor: grab; }
+  .svg-container:active { cursor: grabbing; }
+  .svg-container svg { position: absolute; top: 0; left: 0; }
+  .right-panel { width: 320px; min-width: 320px; background: linear-gradient(180deg, var(--parchment), var(--cream-dark)); border-left: 3px double var(--gold); overflow-y: auto; z-index: 10; box-shadow: -4px 0 15px rgba(0,0,0,0.1); }
+  .right-panel .panel-inner { padding: 24px 20px; }
+  .right-panel .panel-header { padding: 20px; }
+  .right-panel .panel-header h2 { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--gold-light); text-transform: uppercase; letter-spacing: 2px; }
+  .dart-info { margin-bottom: 20px; padding: 16px; background: var(--parchment); border: 1px solid var(--gold-light); border-radius: 6px; font-size: 17px; line-height: 1.6; }
+  .dart-info h4 { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--burgundy); margin-bottom: 10px; font-weight: 700; }
+  .dart-info p { font-size: 17px; line-height: 1.7; color: var(--brown-light); margin-bottom: 6px; }
+  .dart-info .highlight { color: var(--gold); font-weight: 700; font-size: 20px; }
+  .warning-box { margin-top: 16px; padding: 16px; background: rgba(184,134,11,0.1); border: 2px solid var(--gold); border-radius: 6px; border-left: 5px solid var(--gold); }
+  .warning-box p { font-size: 16px; line-height: 1.7; color: var(--brown); }
+  .warning-box strong { color: var(--burgundy); font-size: 18px; }
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: var(--cream); }
+  ::-webkit-scrollbar-thumb { background: var(--gold-light); border-radius: 6px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+  .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--brown-light); opacity: 0.6; }
+  .empty-state .icon { font-size: 80px; margin-bottom: 20px; }
+  .empty-state p { font-size: 24px; font-style: italic; }
+  .status-bar { position: absolute; bottom: 0; left: 0; right: 0; padding: 8px 20px; background: rgba(250,246,238,0.95); border-top: 2px solid var(--gold-light); font-size: 16px; color: var(--brown-light); display: flex; justify-content: space-between; z-index: 5; }
+  .ornament-divider { text-align: center; color: var(--gold); font-size: 20px; letter-spacing: 6px; margin: 16px 0; opacity: 0.6; }
+  .extra-dart-notice { display: none; margin-top: 14px; padding: 12px 16px; background: rgba(107,29,42,0.08); border: 2px solid var(--burgundy); border-radius: 6px; font-size: 16px; color: var(--burgundy); line-height: 1.6; }
+  .extra-dart-notice.show { display: block; }
+  .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
+  .modal-overlay.show { display: flex; }
+  .modal-content { background: var(--parchment); border: 3px double var(--gold); border-radius: 10px; padding: 36px; max-width: 700px; width: 90%; max-height: 80vh; overflow-y: auto; }
+  .modal-content h2 { font-family: 'Playfair Display', serif; color: var(--burgundy); margin-bottom: 20px; text-align: center; font-size: 28px; }
+  .modal-content p { font-size: 18px; line-height: 1.7; margin-bottom: 12px; }
+  .modal-close { display: block; margin: 24px auto 0; padding: 14px 36px; font-family: 'Playfair Display', serif; font-size: 18px; background: var(--burgundy); color: var(--gold-light); border: 2px solid var(--gold); border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; }
+  .modal-close:hover { background: var(--burgundy-dark); }
+  .print-grid-info { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 20px 0; }
+  .print-grid-cell { padding: 16px 10px; background: var(--cream); border: 2px solid var(--gold-light); border-radius: 6px; text-align: center; }
+  .print-grid-cell .cell-label { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; color: var(--burgundy); }
+  .print-grid-cell .cell-joins { font-size: 13px; color: var(--brown-light); margin-top: 6px; line-height: 1.4; }
+  .btn-print-action { display: block; margin: 20px auto 10px; padding: 16px 48px; font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; background: linear-gradient(180deg, var(--gold-light), var(--gold)); color: var(--burgundy-dark); border: 2px solid var(--gold); border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 3px; transition: all 0.3s; }
+  .btn-print-action:hover { box-shadow: 0 4px 20px rgba(184,134,11,0.6); transform: translateY(-2px); }
+  #printArea { display: none; }
+  
+  /* 🔧 ИСПРАВЛЕННЫЕ СТИЛИ ПЕЧАТИ */
+  @page { size: A4 portrait; margin: 0; }
+  @media print {
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: white !important; overflow: visible !important; height: auto !important; margin: 0; padding: 0; }
+    .app-container, .toolbar, .status-bar, .modal-overlay, .empty-state, .main-area { display: none !important; }
+    #printArea { display: block !important; width: 100% !important; }
+    .print-page {
+      width: 210mm !important; height: 297mm !important;
+      page-break-after: always !important; break-after: page !important;
+      position: relative !important; background: white !important;
+      box-sizing: border-box !important; margin: 0 !important; padding: 0 !important; overflow: visible !important;
+    }
+    .print-page:last-child { page-break-after: auto !important; break-after: auto !important; }
+    .print-page svg { display: block !important; width: 210mm !important; height: 297mm !important; }
+  }
+</style>
+</head>
+<body>
+<div class="app-container">
+  <div class="left-panel">
+    <div class="panel-header">
+      <h1>Венский Шик</h1>
+      <div class="subtitle">Построение конструкции основы юбки</div>
+      <div class="subtitle" style="margin-top:4px;font-size:14px;"> по методике Мюллер и сын </div>
+      <div class="header-ornament"> ❦ ❦ ❦ </div>
+    </div>
+    <div class="measurements-section">
+      <div class="section-title"> ✦ Мерки </div>
+      <div class="input-group">
+        <label> Обхват талии (Ст)</label>
+        <div class="hint">Сантиметровая лента плотно вокруг талии</div>
+        <input type="number" id="waist" value="70" min="50" max="140" step="0.5">
+        <div class="unit"> см </div>
+      </div>
+      <div class="input-group">
+        <label> Обхват бёдер (Сб)</label>
+        <div class="hint">По наиболее выступающим точкам ягодиц</div>
+        <input type="number" id="hips" value="96" min="70" max="160" step="0.5">
+        <div class="unit"> см </div>
+      </div>
+      <div class="input-group">
+        <label>Длина изделия (Ди)</label>
+        <div class="hint">От линии талии до желаемой длины</div>
+        <input type="number" id="length" value="60" min="30" max="120" step="0.5">
+        <div class="unit"> см </div>
+      </div>
+      <div class="input-group">
+        <label> Глубина бёдер (Дб)</label>
+        <div class="hint">Обычно 18–20 см от талии</div>
+        <input type="number" id="hipDepth" value="20" min="14" max="26" step="0.5">
+        <div class="unit"> см </div>
+      </div>
+      <div class="input-group">
+        <label>Прибавка на свободу (Пб)</label>
+        <div class="hint">Рекомендуется 1–2 см для основы</div>
+        <input type="number" id="ease" value="1" min="0" max="5" step="0.5">
+        <div class="unit"> см </div>
+      </div>
+      <div class="section-title" style="margin-top:20px;"> ✦ Вытачки </div>
+      <div class="input-group">
+        <label> Заднее полотнище </label>
+        <select id="backDartCount">
+          <option value="1" selected>1 вытачка </option>
+          <option value="2">2 вытачки </option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label> Переднее полотнище </label>
+        <select id="frontDartCount">
+          <option value="1" selected>1 вытачка </option>
+          <option value="2">2 вытачки </option>
+        </select>
+      </div>
+      <div class="input-group">
+        <div class="toggle-group">
+          <label for="sideDartToggle"> Боковая вытачка </label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="sideDartToggle" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="hint">Вытачка по боковому шву (~25% раствора)</div>
+      </div>
+      <div id="extraDartNotice" class="extra-dart-notice">
+        ⚠ <strong>Внимание:</strong> Разница между бёдрами и талией велика. Рекомендуется 2 вытачки на заднем полотнище.
+      </div>
+      <div class="ornament-divider">— ✦ — </div>
+      <button class="btn btn-primary" id="btnBuild" type="button"> ✦ Построить чертёж</button>
+      <button class="btn btn-secondary" id="btnFabric" type="button"> ✦ Расчёт ткани </button>
+      <button class="btn btn-outline" id="btnPrint" type="button"> 🖨 Печать чертежа</button>
+    </div>
+    <div class="fabric-info" id="fabricInfo" style="display:none;">
+      <div class="section-title"> ✦ Расход ткани </div>
+      <div id="fabricDetails"></div>
+    </div>
+  </div>
+  <div class="main-area">
+    <div class="toolbar">
+      <div class="toolbar-group">
+        <button class="toolbar-btn" id="btnZoomIn" type="button"> ＋ Увеличить</button>
+        <button class="toolbar-btn" id="btnZoomOut" type="button"> － Уменьшить</button>
+        <button class="toolbar-btn" id="btnReset" type="button"> ⟲ Сбросить</button>
+        <span class="zoom-display" id="zoomDisplay">100%</span>
+      </div>
+      <div class="toolbar-group">
+        <button class="toolbar-btn" id="btnGrid" type="button">Сетка листов</button>
+        <button class="toolbar-btn" id="btnFit" type="button"> ⊡ Вписать </button>
+        <button class="toolbar-btn" id="btnActual" type="button">1:1 Реальный размер</button>
+      </div>
+    </div>
+    <div class="svg-container" id="svgContainer">
+      <div class="empty-state" id="emptyState">
+        <div class="icon"> ✂ </div>
+        <p>Введите мерки и нажмите «Построить чертёж»</p>
+      </div>
+      <svg id="patternSvg" style="display:none;"></svg>
+    </div>
+    <div class="status-bar">
+      <span id="statusLeft">Готов к построению</span>
+      <span id="statusRight">Мюллер и сын — основа юбки</span>
+    </div>
+  </div>
+  <div class="right-panel" id="rightPanel">
+    <div class="panel-header">
+      <h2> ✦ Параметры чертежа </h2>
+    </div>
+    <div class="panel-inner" id="rightPanelContent">
+      <div style="text-align:center; padding:24px 0; opacity:0.5; font-style:italic; font-size:18px;">
+        Постройте чертёж, чтобы увидеть детали конструкции
+      </div>
+    </div>
+  </div>
+</div>
+<div id="printArea"></div>
+<div class="modal-overlay" id="printModal">
+  <div class="modal-content">
+    <h2> ✦ Подготовка к печати </h2>
+    <div id="printModalContent"></div>
+    <button class="btn-print-action" id="btnDoPrint" type="button"> 🖨 Распечатать чертёж</button>
+    <button class="modal-close" id="btnCloseModal" type="button">Закрыть</button>
+  </div>
+</div>
+<script>
+(function() {
+  'use strict';
+  var svgPanX = 0, svgPanY = 0, svgZoom = 1;
+  var isDragging = false, dragStartX = 0, dragStartY = 0, dragPanX = 0, dragPanY = 0;
+  var showGrid = false, patternBuilt = false, patternData = null;
+  var lastTouchDist = 0;
+  var A4_W_MM = 210; var A4_H_MM = 297;
+  var MARGIN_MM = 10;
+  var A4_CONTENT_W_MM = A4_W_MM - 2 * MARGIN_MM;
+  var A4_CONTENT_H_MM = A4_H_MM - 2 * MARGIN_MM;
+  var MM_TO_PX = 96 / 25.4;
+  var svgContainer = document.getElementById('svgContainer');
+  var patternSvg = document.getElementById('patternSvg');
+  var emptyState = document.getElementById('emptyState');
+  var zoomDisplay = document.getElementById('zoomDisplay');
+  var statusLeft = document.getElementById('statusLeft');
+  var printArea = document.getElementById('printArea');
+
+  function getMeasurements() {
+    return {
+      waist: parseFloat(document.getElementById('waist').value) || 70,
+      hips: parseFloat(document.getElementById('hips').value) || 96,
+      length: parseFloat(document.getElementById('length').value) || 60,
+      hipDepth: parseFloat(document.getElementById('hipDepth').value) || 20,
+      ease: parseFloat(document.getElementById('ease').value) || 1
+    };
+  }
+
+  function buildPattern() {
+    var m = getMeasurements();
+    var backDartNum = parseInt(document.getElementById('backDartCount').value) || 1;
+    var frontDartNum = parseInt(document.getElementById('frontDartCount').value) || 1;
+    var sideDartOn = document.getElementById('sideDartToggle').checked;
+    var diff = (m.hips / 2 + m.ease) - m.waist / 2;
+    var needsExtraDart = diff > 20;
+    document.getElementById('extraDartNotice').classList.toggle('show', needsExtraDart);
+    var totalDart = diff;
+    var backPercent, sidePercent, frontPercent;
+    if (sideDartOn) { backPercent = 0.45; sidePercent = 0.25; frontPercent = 0.30; }
+    else { backPercent = 0.55; sidePercent = 0; frontPercent = 0.45; }
+    var backDartTotal_cm = totalDart * backPercent;
+    var sideDartWidth_cm = totalDart * sidePercent;
+    var frontDartTotal_cm = totalDart * frontPercent;
+    var backDarts = [];
+    if (backDartNum === 1) {
+      backDarts.push({ name: 'Задняя вытачка', relPos: 0.45, width: backDartTotal_cm, length: m.hipDepth * 0.65 });
+    } else {
+      backDarts.push({ name: 'Задняя вытачка 1', relPos: 0.33, width: backDartTotal_cm * 0.55, length: m.hipDepth * 0.65 });
+      backDarts.push({ name: 'Задняя вытачка 2', relPos: 0.67, width: backDartTotal_cm * 0.45, length: m.hipDepth * 0.55 });
+    }
+    var sideDart = sideDartOn ? { name: 'Боковая вытачка', width: sideDartWidth_cm, length: m.hipDepth * 0.55 } : null;
+    var frontDarts = [];
+    if (frontDartNum === 1) {
+      frontDarts.push({ name: 'Передняя вытачка', relPos: 0.45, width: frontDartTotal_cm, length: m.hipDepth * 0.45 });
+    } else {
+      frontDarts.push({ name: 'Передняя вытачка 1', relPos: 0.33, width: frontDartTotal_cm * 0.55, length: m.hipDepth * 0.5 });
+      frontDarts.push({ name: 'Передняя вытачка 2', relPos: 0.67, width: frontDartTotal_cm * 0.45, length: m.hipDepth * 0.4 });
+    }
+    var margin = 50;
+    var quarterH_mm = (m.hips / 2 + m.ease) / 2 * 10;
+    var leftX = margin;
+    var sideSeamX = leftX + quarterH_mm;
+    var rightX = sideSeamX + quarterH_mm;
+    var waistY = margin + 20;
+    var hipLineY = waistY + m.hipDepth * 10;
+    var hemY = waistY + m.length * 10;
+    var patternWidthMM = rightX - leftX + margin * 2;
+    var patternHeightMM = hemY - waistY + margin * 2 + 60;
+    patternData = {
+      m: m, needsExtraDart: needsExtraDart, totalDart: totalDart,
+      backDarts: backDarts, sideDart: sideDart, frontDarts: frontDarts,
+      backDartNum: backDartNum, frontDartNum: frontDartNum, sideDartOn: sideDartOn,
+      leftX: leftX, sideSeamX: sideSeamX, rightX: rightX,
+      waistY: waistY, hipLineY: hipLineY, hemY: hemY,
+      quarterH_mm: quarterH_mm,
+      backDartTotal_cm: backDartTotal_cm, sideDartWidth_cm: sideDartWidth_cm,
+      frontDartTotal_cm: frontDartTotal_cm,
+      patternWidthMM: patternWidthMM, patternHeightMM: patternHeightMM
+    };
+    renderPattern(false);
+    updateRightPanel();
+    statusLeft.textContent = 'Чертёж построен | Талия: ' + m.waist + ' см, Бёдра: ' + m.hips + ' см, Длина: ' + m.length + ' см';
+    patternBuilt = true;
+    setTimeout(fitToView, 150);
+  }
+
+  function buildWaistPath(ox, oy, p) {
+    var waistY = oy + p.waistY;
+    var leftX = ox + p.leftX;
+    var sideSeamX = ox + p.sideSeamX;
+    var rightX = ox + p.rightX;
+    var backWidth = sideSeamX - leftX;
+    var frontWidth = rightX - sideSeamX;
+    var backDartData = [];
+    for (var bi = 0; bi < p.backDarts.length; bi++) {
+      var bd = p.backDarts[bi];
+      var x = leftX + bd.relPos * backWidth;
+      var hw = bd.width * 10 / 2;
+      backDartData.push({ left: x - hw, right: x + hw, apexX: x, apexY: waistY + bd.length * 10, name: bd.name, widthCm: bd.width, lengthCm: bd.length });
+    }
+    var sideDartData = null;
+    if (p.sideDart) {
+      var sd = p.sideDart;
+      var halfW_mm = sd.width * 10 / 2;
+      var backOffset = halfW_mm * 0.33;
+      var frontOffset = halfW_mm * 0.67;
+      sideDartData = { left: sideSeamX - backOffset, right: sideSeamX + frontOffset, apexX: sideSeamX - backOffset * 0.3 + frontOffset * 0.3, apexY: waistY + sd.length * 10, name: sd.name, widthCm: sd.width, lengthCm: sd.length };
+    }
+    var frontDartData = [];
+    for (var fi = 0; fi < p.frontDarts.length; fi++) {
+      var fd = p.frontDarts[fi];
+      var x = sideSeamX + fd.relPos * frontWidth;
+      var hw = fd.width * 10 / 2;
+      frontDartData.push({ left: x - hw, right: x + hw, apexX: x, apexY: waistY + fd.length * 10, name: fd.name, widthCm: fd.width, lengthCm: fd.length });
+    }
+    var cmds = [];
+    cmds.push('M ' + leftX + ' ' + waistY);
+    if (backDartData.length > 0 && backDartData[0].left > leftX + 2) cmds.push('L ' + backDartData[0].left + ' ' + waistY);
+    for (var di = 0; di < backDartData.length; di++) {
+      var d = backDartData[di];
+      cmds.push('L ' + d.left + ' ' + waistY + ' L ' + d.apexX + ' ' + d.apexY + ' L ' + d.right + ' ' + waistY);
+      if (di < backDartData.length - 1) cmds.push('L ' + backDartData[di + 1].left + ' ' + waistY);
+    }
+    var targetY = sideDartData ? waistY - 2 : waistY - 7;
+    if (backDartData.length > 0) {
+      var lastBack = backDartData[backDartData.length - 1];
+      var segLen = sideSeamX - lastBack.right;
+      if (segLen > 2) { var dY = targetY - waistY; cmds.push('C ' + (lastBack.right + segLen * 0.5) + ' ' + waistY + ' ' + (lastBack.right + segLen * 0.75) + ' ' + (waistY + dY * 0.5) + ' ' + sideSeamX + ' ' + targetY); }
+      else cmds.push('L ' + sideSeamX + ' ' + targetY);
+    } else { var dY = targetY - waistY; cmds.push('C ' + (leftX + backWidth * 0.5) + ' ' + waistY + ' ' + (leftX + backWidth * 0.75) + ' ' + (waistY + dY * 0.5) + ' ' + sideSeamX + ' ' + targetY); }
+    if (sideDartData) cmds.push('L ' + sideDartData.left + ' ' + waistY + ' L ' + sideDartData.apexX + ' ' + sideDartData.apexY + ' L ' + sideDartData.right + ' ' + waistY);
+    if (frontDartData.length > 0) {
+      var firstFront = frontDartData[0];
+      var segLen2 = firstFront.left - (sideDartData ? sideDartData.right : sideSeamX);
+      if (segLen2 > 2) { var sf = sideDartData ? sideDartData.right : sideSeamX; var sy = sideDartData ? waistY : targetY; cmds.push('C ' + (sf + segLen2 * 0.3) + ' ' + (sy + (waistY - sy) * 0.3) + ' ' + (sf + segLen2 * 0.6) + ' ' + waistY + ' ' + firstFront.left + ' ' + waistY); }
+    } else cmds.push('L ' + rightX + ' ' + waistY);
+    for (var fi2 = 0; fi2 < frontDartData.length; fi2++) {
+      var fd2 = frontDartData[fi2];
+      cmds.push('L ' + fd2.left + ' ' + waistY + ' L ' + fd2.apexX + ' ' + fd2.apexY + ' L ' + fd2.right + ' ' + waistY);
+      if (fi2 < frontDartData.length - 1) cmds.push('L ' + frontDartData[fi2 + 1].left + ' ' + waistY);
+    }
+    if (frontDartData.length > 0) { var lastFront = frontDartData[frontDartData.length - 1]; if (lastFront.right < rightX - 2) cmds.push('L ' + lastFront.right + ' ' + waistY + ' L ' + rightX + ' ' + waistY); }
+    else cmds.push('L ' + rightX + ' ' + waistY);
+    return { path: cmds.join(' '), backDartData: backDartData, sideDartData: sideDartData, frontDartData: frontDartData };
+  }
+
+  function drawPatternElements(ox, oy, p, svg, withGrid, pageLabel, pageJoins, vw, vh) {
+    var m = p.m;
+    if (!pageLabel && withGrid) {
+      var cols = Math.ceil(p.patternWidthMM / A4_CONTENT_W_MM);
+      var rows = Math.ceil(p.patternHeightMM / A4_CONTENT_H_MM);
+      var letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      for (var r = 0; r < rows; r++) {
+        for (var c = 0; c < cols; c++) {
+          var cellX = c * A4_CONTENT_W_MM, cellY = r * A4_CONTENT_H_MM;
+          var cellW = Math.min(A4_CONTENT_W_MM, p.patternWidthMM - cellX), cellH = Math.min(A4_CONTENT_H_MM, p.patternHeightMM - cellY);
+          var label = letters[c] + (r + 1);
+          svg += '<rect x="' + cellX + '" y="' + cellY + '" width="' + cellW + '" height="' + cellH + '" fill="none" stroke="#6b1d2a" stroke-width="1.2" stroke-dasharray="6,3" opacity="0.35"/>';
+          svg += '<text x="' + (cellX + 10) + '" y="' + (cellY + 22) + '" font-family="Playfair Display, serif" font-size="20" font-weight="700" fill="#6b1d2a" opacity="0.25">' + label + '</text>';
+          var jts = [];
+          if (c > 0) jts.push({ text: '←' + letters[c-1] + (r+1), x: cellX + 4, y: cellY + cellH / 2, anchor: 'start' });
+          if (c < cols - 1) jts.push({ text: letters[c+1] + (r+1) + '→', x: cellX + cellW - 4, y: cellY + cellH / 2, anchor: 'end' });
+          if (r > 0) jts.push({ text: '↑' + letters[c] + r, x: cellX + cellW / 2, y: cellY + 12, anchor: 'middle' });
+          if (r < rows - 1) jts.push({ text: letters[c] + (r+2) + '↓', x: cellX + cellW / 2, y: cellY + cellH - 6, anchor: 'middle' });
+          for (var ji = 0; ji < jts.length; ji++) { svg += '<text x="' + jts[ji].x + '" y="' + jts[ji].y + '" text-anchor="' + jts[ji].anchor + '" font-family="Cormorant Garamond, serif" font-size="8" fill="#b8860b" opacity="0.6">' + jts[ji].text + '</text>'; }
+        }
+      }
+      for (var cc = 1; cc < cols; cc++) svg += '<line x1="' + (cc * A4_CONTENT_W_MM) + '" y1="0" x2="' + (cc * A4_CONTENT_W_MM) + '" y2="' + p.patternHeightMM + '" stroke="#6b1d2a" stroke-width="0.6" stroke-dasharray="4,4" opacity="0.25"/>';
+      for (var rr = 1; rr < rows; rr++) svg += '<line x1="0" y1="' + (rr * A4_CONTENT_H_MM) + '" x2="' + p.patternWidthMM + '" y2="' + (rr * A4_CONTENT_H_MM) + '" stroke="#6b1d2a" stroke-width="0.6" stroke-dasharray="4,4" opacity="0.25"/>';
+    }
+    svg += '<line x1="' + (ox + p.leftX) + '" y1="' + (oy + p.waistY - 8) + '" x2="' + (ox + p.leftX) + '" y2="' + (oy + p.hemY + 10) + '" stroke="#6b1d2a" stroke-width="2" stroke-dasharray="10,5"/>';
+    var cbMidY = oy + (p.waistY + p.hemY) / 2;
+    svg += '<text x="' + (ox + p.leftX - 10) + '" y="' + cbMidY + '" transform="rotate(-90, ' + (ox + p.leftX - 10) + ', ' + cbMidY + ')" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="9" fill="#6b1d2a" font-weight="600">Центр спинки</text>';
+    svg += '<line x1="' + (ox + p.rightX) + '" y1="' + (oy + p.waistY - 8) + '" x2="' + (ox + p.rightX) + '" y2="' + (oy + p.hemY + 10) + '" stroke="#6b1d2a" stroke-width="2" stroke-dasharray="10,5"/>';
+    var cfMidY = oy + (p.waistY + p.hemY) / 2;
+    svg += '<text x="' + (ox + p.rightX + 10) + '" y="' + cfMidY + '" transform="rotate(90, ' + (ox + p.rightX + 10) + ', ' + cfMidY + ')" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="9" fill="#6b1d2a" font-weight="600">Центр переда</text>';
+    svg += '<line x1="' + (ox + p.leftX - 15) + '" y1="' + (oy + p.hipLineY) + '" x2="' + (ox + p.rightX + 15) + '" y2="' + (oy + p.hipLineY) + '" stroke="#b8860b" stroke-width="1.2" stroke-dasharray="8,4"/>';
+    svg += '<text x="' + (ox + p.leftX - 20) + '" y="' + (oy + p.hipLineY + 3) + '" text-anchor="end" font-family="Cormorant Garamond, serif" font-size="8" fill="#b8860b" font-weight="600">Линия бёдер</text>';
+    svg += '<line x1="' + (ox + p.leftX) + '" y1="' + (oy + p.hemY) + '" x2="' + (ox + p.rightX) + '" y2="' + (oy + p.hemY) + '" stroke="#3e2723" stroke-width="2.5"/>';
+    svg += '<text x="' + (ox + p.leftX + 5) + '" y="' + (oy + p.hemY + 12) + '" font-family="Cormorant Garamond, serif" font-size="8" fill="#3e2723" font-weight="600">Линия низа</text>';
+    svg += '<line x1="' + (ox + p.sideSeamX) + '" y1="' + (oy + p.hipLineY) + '" x2="' + (ox + p.sideSeamX) + '" y2="' + (oy + p.hemY) + '" stroke="#6b1d2a" stroke-width="2"/>';
+    var ssMidY = oy + p.hipLineY + (p.hemY - p.hipLineY) / 2;
+    svg += '<text x="' + (ox + p.sideSeamX) + '" y="' + (ssMidY + 15) + '" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="8" fill="#6b1d2a" font-weight="600">Боковой шов</text>';
+    var waistResult = buildWaistPath(ox, oy, p);
+    svg += '<path d="' + waistResult.path + '" fill="none" stroke="#3e2723" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>';
+    var sideSeamTopY = waistResult.sideDartData ? waistResult.sideDartData.apexY : oy + p.waistY - 7;
+    svg += '<path d="M ' + (ox + p.sideSeamX) + ' ' + sideSeamTopY + ' Q ' + (ox + p.sideSeamX + 2) + ' ' + (oy + p.waistY + m.hipDepth * 10 * 0.25) + ' ' + (ox + p.sideSeamX) + ' ' + (oy + p.hipLineY) + '" fill="none" stroke="#3e2723" stroke-width="1.8"/>';
+    var allDartData = waistResult.backDartData.concat([]);
+    if (waistResult.sideDartData) allDartData.push(waistResult.sideDartData);
+    allDartData = allDartData.concat(waistResult.frontDartData);
+    for (var di = 0; di < allDartData.length; di++) {
+      var dd = allDartData[di];
+      svg += '<line x1="' + dd.apexX + '" y1="' + (oy + p.waistY - 2) + '" x2="' + dd.apexX + '" y2="' + dd.apexY + '" stroke="#b8860b" stroke-width="0.7" stroke-dasharray="4,2"/>';
+      svg += '<text x="' + dd.apexX + '" y="' + (dd.apexY + 12) + '" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="7.5" fill="#b8860b" font-style="italic">' + dd.name + '</text>';
+      svg += '<text x="' + dd.apexX + '" y="' + (dd.apexY + 21) + '" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="7" fill="#b8860b">' + dd.widthCm.toFixed(1) + ' см × ' + dd.lengthCm.toFixed(1) + ' см</text>';
+    }
+    var waistMidX = ox + p.leftX + (p.rightX - p.leftX) / 2;
+    svg += '<text x="' + waistMidX + '" y="' + (oy + p.waistY - 16) + '" text-anchor="middle" font-family="Playfair Display, serif" font-size="10" fill="#6b1d2a" font-weight="700">Линия талии</text>';
+    var dimY = oy + p.hemY + 30;
+    svg += '<line x1="' + (ox + p.leftX) + '" y1="' + dimY + '" x2="' + (ox + p.rightX) + '" y2="' + dimY + '" stroke="#6b1d2a" stroke-width="0.8" marker-end="url(#ae)" marker-start="url(#as)"/>';
+    svg += '<line x1="' + (ox + p.leftX) + '" y1="' + (oy + p.hemY) + '" x2="' + (ox + p.leftX) + '" y2="' + (dimY + 5) + '" stroke="#6b1d2a" stroke-width="0.5"/>';
+    svg += '<line x1="' + (ox + p.rightX) + '" y1="' + (oy + p.hemY) + '" x2="' + (ox + p.rightX) + '" y2="' + (dimY + 5) + '" stroke="#6b1d2a" stroke-width="0.5"/>';
+    var halfHipCm = m.hips / 2 + m.ease;
+    svg += '<text x="' + (ox + p.leftX + (p.rightX - p.leftX) / 2) + '" y="' + (dimY + 14) + '" text-anchor="middle" font-family="Playfair Display, serif" font-size="9" fill="#6b1d2a">Сб/2 + прибавка = ' + halfHipCm.toFixed(1) + ' см</text>';
+    var backMidX = ox + p.leftX + p.quarterH_mm / 2;
+    svg += '<text x="' + backMidX + '" y="' + (oy + p.hipLineY + 15) + '" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="8" fill="#5d4037">Заднее: ' + (m.hips / 4 + m.ease / 2).toFixed(1) + ' см</text>';
+    var frontMidX = ox + p.sideSeamX + p.quarterH_mm / 2;
+    svg += '<text x="' + frontMidX + '" y="' + (oy + p.hipLineY + 15) + '" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="8" fill="#5d4037">Переднее: ' + (m.hips / 4 + m.ease / 2).toFixed(1) + ' см</text>';
+    var dimX = ox + p.rightX + 30;
+    svg += '<line x1="' + dimX + '" y1="' + (oy + p.waistY - 5) + '" x2="' + dimX + '" y2="' + (oy + p.hemY) + '" stroke="#6b1d2a" stroke-width="0.8" marker-end="url(#ae)" marker-start="url(#as)"/>';
+    svg += '<line x1="' + (ox + p.rightX + 5) + '" y1="' + (oy + p.waistY - 5) + '" x2="' + (dimX - 5) + '" y2="' + (oy + p.waistY - 5) + '" stroke="#6b1d2a" stroke-width="0.5"/>';
+    svg += '<line x1="' + (ox + p.rightX + 5) + '" y1="' + (oy + p.hemY) + '" x2="' + (dimX - 5) + '" y2="' + (oy + p.hemY) + '" stroke="#6b1d2a" stroke-width="0.5"/>';
+    var midLenY = oy + p.waistY + (p.hemY - p.waistY) / 2;
+    svg += '<text x="' + (dimX + 8) + '" y="' + midLenY + '" transform="rotate(90, ' + (dimX + 8) + ', ' + midLenY + ')" text-anchor="middle" font-family="Playfair Display, serif" font-size="9" fill="#6b1d2a">Ди = ' + p.m.length + ' см</text>';
+    var titleY = oy + p.hemY + 48;
+    svg += '<rect x="' + (ox + p.leftX) + '" y="' + titleY + '" width="' + (p.rightX - p.leftX) + '" height="30" fill="none" stroke="#b8860b" stroke-width="1" rx="3"/>';
+    svg += '<text x="' + waistMidX + '" y="' + (titleY + 13) + '" text-anchor="middle" font-family="Playfair Display, serif" font-size="10" fill="#6b1d2a" font-weight="700">Основа юбки — Мюллер и сын</text>';
+    var dartSummary = p.backDartNum + ' задн.' + (p.sideDartOn ? ' + бок.' : '') + ' + ' + p.frontDartNum + ' пер.';
+    svg += '<text x="' + waistMidX + '" y="' + (titleY + 26) + '" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="8" fill="#5d4037">Ст=' + p.m.waist + ' Сб=' + p.m.hips + ' Ди=' + p.m.length + ' | ' + dartSummary + '</text>';
+    var scaleY = oy - 8;
+    svg += '<line x1="' + (ox + p.leftX) + '" y1="' + scaleY + '" x2="' + (ox + p.leftX + 100) + '" y2="' + scaleY + '" stroke="#b8860b" stroke-width="1.2"/>';
+    svg += '<line x1="' + (ox + p.leftX) + '" y1="' + (scaleY - 6) + '" x2="' + (ox + p.leftX) + '" y2="' + (scaleY + 6) + '" stroke="#b8860b" stroke-width="1"/>';
+    svg += '<line x1="' + (ox + p.leftX + 100) + '" y1="' + (scaleY - 6) + '" x2="' + (ox + p.leftX + 100) + '" y2="' + (scaleY + 6) + '" stroke="#b8860b" stroke-width="1"/>';
+    svg += '<text x="' + (ox + p.leftX + 50) + '" y="' + (scaleY - 10) + '" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="8" fill="#b8860b" font-weight="600">10 см (1:1)</text>';
+    svg += '<line x1="' + (ox + p.leftX) + '" y1="' + (oy + p.hemY + 5) + '" x2="' + (ox + p.rightX) + '" y2="' + (oy + p.hemY + 5) + '" stroke="#6b1d2a" stroke-width="0.6" stroke-dasharray="3,3"/>';
+    svg += '<text x="' + (ox + p.leftX + 10) + '" y="' + (oy + p.hemY + 14) + '" font-family="Cormorant Garamond, serif" font-size="6.5" fill="#6b1d2a">Припуск на подгиб 3–4 см</text>';
+    
+    if (pageLabel) {
+      svg += '<rect x="' + (MARGIN_MM) + '" y="' + (MARGIN_MM) + '" width="' + (A4_CONTENT_W_MM) + '" height="' + (A4_CONTENT_H_MM) + '" fill="none" stroke="#6b1d2a" stroke-width="2" stroke-dasharray="10,5"/>';
+      svg += '<text x="' + (MARGIN_MM + 10) + '" y="' + (MARGIN_MM + 35) + '" font-family="Playfair Display, serif" font-size="42" font-weight="700" fill="#6b1d2a">' + pageLabel + '</text>';
+      if (pageJoins) {
+        svg += '<text x="' + (MARGIN_MM + A4_CONTENT_W_MM / 2) + '" y="' + (MARGIN_MM + A4_CONTENT_H_MM - 12) + '" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="14" fill="#b8860b" font-weight="600">' + pageJoins + '</text>';
+      }
+    }
+    return svg;
+  }
+
+  function generateFullSVG(withGrid) {
+    if (!patternData) return '';
+    var p = patternData;
+    var ox = 0, oy = 0;
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + p.patternWidthMM + '" height="' + p.patternHeightMM + '" viewBox="0 0 ' + p.patternWidthMM + ' ' + p.patternHeightMM + '">';
+    svg += '<defs><marker id="ae" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="none" stroke="#3e2723" stroke-width="1"/></marker>';
+    svg += '<marker id="as" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto"><path d="M8,0 L0,3 L8,6" fill="none" stroke="#3e2723" stroke-width="1"/></marker>';
+    if (!withGrid) svg += '<pattern id="bgGrid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M 50 0 L 0 0 0 50" fill="none" stroke="#e8e0d0" stroke-width="0.3"/></pattern>';
+    svg += '</defs>';
+    if (!withGrid) svg += '<rect width="' + p.patternWidthMM + '" height="' + p.patternHeightMM + '" fill="url(#bgGrid)"/>';
+    svg = drawPatternElements(ox, oy, p, svg, withGrid, null, null, 0, 0);
+    svg += '</svg>';
+    return svg;
+  }
+
+  function renderPattern() {
+    if (!patternData) return;
+    var svgContent = generateFullSVG(false);
+    emptyState.style.display = 'none';
+    patternSvg.style.display = 'block';
+    patternSvg.innerHTML = svgContent;
+    patternSvg.style.width = patternData.patternWidthMM + 'mm';
+    patternSvg.style.height = patternData.patternHeightMM + 'mm';
+    resetView();
+  }
+
+  // 🔧 ПОЛНОСТЬЮ ПЕРЕПИСАНА ФУНКЦИЯ ПОДГОТОВКИ ПЕЧАТИ
+  function preparePrintPages() {
+    if (!patternData) return;
+    var p = patternData;
+    var cols = Math.ceil(p.patternWidthMM / A4_CONTENT_W_MM);
+    var rows = Math.ceil(p.patternHeightMM / A4_CONTENT_H_MM);
+    var letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var html = '';
+    var PAGE_W = 210, PAGE_H = 297, MG = MARGIN_MM;
+
+    for (var r = 0; r < rows; r++) {
+      for (var c = 0; c < cols; c++) {
+        var viewX = c * A4_CONTENT_W_MM;
+        var viewY = r * A4_CONTENT_H_MM;
+        var label = letters[c] + (r + 1);
+
+        var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + PAGE_W + 'mm" height="' + PAGE_H + 'mm" viewBox="0 0 ' + PAGE_W + ' ' + PAGE_H + '">';
+        svg += '<defs><marker id="ae" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="none" stroke="#3e2723" stroke-width="1"/></marker>';
+        svg += '<marker id="as" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto"><path d="M8,0 L0,3 L8,6" fill="none" stroke="#3e2723" stroke-width="1"/></marker></defs>';
+        svg += '<rect x="0" y="0" width="' + PAGE_W + '" height="' + PAGE_H + '" fill="white"/>';
+
+        // 🔧 КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ: Сдвигаем чертёж ОТРИЦАТЕЛЬНО, чтобы нужная часть попала в viewBox 0..210
+        var ox = -viewX + MG;
+        var oy = -viewY + MG;
+        svg = drawPatternElements(ox, oy, p, svg, false, null, null, 0, 0);
+
+        // Рамка рабочей области листа
+        svg += '<rect x="' + MG + '" y="' + MG + '" width="' + A4_CONTENT_W_MM + '" height="' + A4_CONTENT_H_MM + '" fill="none" stroke="#6b1d2a" stroke-width="1.2" stroke-dasharray="8,4" opacity="0.6"/>';
+        // Номер листа
+        svg += '<text x="' + (MG + 8) + '" y="' + (MG + 24) + '" font-family="Playfair Display, serif" font-size="34" font-weight="700" fill="#6b1d2a">' + label + '</text>';
+
+        // Метки стыковки
+        var edge = 6, tick = 7;
+        svg += '<line x1="' + (PAGE_W/2 - tick) + '" y1="' + edge + '" x2="' + (PAGE_W/2 + tick) + '" y2="' + edge + '" stroke="#b8860b" stroke-width="1.5"/>';
+        svg += '<text x="' + (PAGE_W/2) + '" y="' + (edge + 13) + '" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="11" fill="#b8860b">' + (r > 0 ? '↑ ' + letters[c] + r : '— Верх —') + '</text>';
+        svg += '<line x1="' + (PAGE_W/2 - tick) + '" y1="' + (PAGE_H - edge) + '" x2="' + (PAGE_W/2 + tick) + '" y2="' + (PAGE_H - edge) + '" stroke="#b8860b" stroke-width="1.5"/>';
+        svg += '<text x="' + (PAGE_W/2) + '" y="' + (PAGE_H - edge - 5) + '" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="11" fill="#b8860b">' + (r < rows - 1 ? '↓ ' + letters[c] + (r + 2) : '— Низ —') + '</text>';
+        svg += '<line x1="' + edge + '" y1="' + (PAGE_H/2 - tick) + '" x2="' + edge + '" y2="' + (PAGE_H/2 + tick) + '" stroke="#b8860b" stroke-width="1.5"/>';
+        svg += '<text x="' + (edge + 12) + '" y="' + (PAGE_H/2 + 4) + '" font-family="Cormorant Garamond, serif" font-size="11" fill="#b8860b">' + (c > 0 ? '← ' + letters[c-1] + (r+1) : 'Лево') + '</text>';
+        svg += '<line x1="' + (PAGE_W - edge) + '" y1="' + (PAGE_H/2 - tick) + '" x2="' + (PAGE_W - edge) + '" y2="' + (PAGE_H/2 + tick) + '" stroke="#b8860b" stroke-width="1.5"/>';
+        svg += '<text x="' + (PAGE_W - edge - 12) + '" y="' + (PAGE_H/2 + 4) + '" text-anchor="end" font-family="Cormorant Garamond, serif" font-size="11" fill="#b8860b">' + (c < cols - 1 ? '→ ' + letters[c+1] + (r+1) : 'Право') + '</text>';
+
+        svg += '</svg>';
+        html += '<div class="print-page">' + svg + '</div>';
+      }
+    }
+    printArea.innerHTML = html;
+  }
+
+  function applyTransform() {
+    patternSvg.style.transform = 'translate(' + svgPanX + 'px, ' + svgPanY + 'px) scale(' + svgZoom + ')';
+    patternSvg.style.transformOrigin = '0 0';
+    patternSvg.style.position = 'absolute';
+    zoomDisplay.textContent = Math.round(svgZoom * 100) + '%';
+  }
+  function resetView() { svgZoom = 1; svgPanX = 0; svgPanY = 0; applyTransform(); }
+  function fitToView() {
+    if (!patternBuilt) return;
+    var cw = svgContainer.clientWidth, ch = svgContainer.clientHeight;
+    var sw = patternData.patternWidthMM * MM_TO_PX, sh = patternData.patternHeightMM * MM_TO_PX;
+    svgZoom = Math.min(cw / sw, ch / sh) * 0.92;
+    svgPanX = (cw - sw * svgZoom) / 2; svgPanY = (ch - sh * svgZoom) / 2;
+    applyTransform();
+  }
+  function actualSize() {
+    if (!patternBuilt) return;
+    var cw = svgContainer.clientWidth, ch = svgContainer.clientHeight;
+    var sw = patternData.patternWidthMM * MM_TO_PX, sh = patternData.patternHeightMM * MM_TO_PX;
+    svgZoom = 1; svgPanX = (cw - sw) / 2; svgPanY = (ch - sh) / 2; applyTransform();
+  }
+  function zoomIn() { svgZoom = Math.min(5, svgZoom * 1.3); applyTransform(); }
+  function zoomOut() { svgZoom = Math.max(0.05, svgZoom / 1.3); applyTransform(); }
+  function toggleGrid() {
+    showGrid = !showGrid;
+    document.getElementById('btnGrid').classList.toggle('active', showGrid);
+    if (!patternBuilt) return;
+    if (showGrid) { var svgContent = generateFullSVG(true); patternSvg.innerHTML = svgContent; }
+    else { renderPattern(); }
+  }
+  function calculateFabric() {
+    if (!patternBuilt) buildPattern();
+    var m = getMeasurements();
+    var sa = 2, ha = 4;
+    var results = [], fwList = [90, 140, 150];
+    for (var i = 0; i < fwList.length; i++) {
+      var fw = fwList[i], hh = m.hips / 2 + m.ease + sa * 2, pl = m.length + ha + sa * 2;
+      if (hh * 2 <= fw) results.push({ width: fw, length: pl, layout: 'Полотнища рядом' });
+      else results.push({ width: fw, length: pl * 2, layout: 'Полотнища друг за другом' });
+    }
+    var ow = 140, hh = m.hips / 2 + m.ease + sa * 2;
+    var ol = (hh * 2 <= ow) ? (m.length + ha + sa * 2) : ((m.length + ha + sa * 2) * 2);
+    var wl = m.waist + 5, ww = 4, tl = ol + ww, rec = Math.ceil(tl / 10) / 10;
+    var html = '';
+    html += '<div class="info-block"><strong>Оптимальный расклад:</strong><br>Ширина ткани: <span class="value">' + ow + ' см</span><br>Длина на юбку: <span class="value">' + (ol / 100).toFixed(2) + ' м</span></div>';
+    html += '<div class="info-block"><strong>Пояс:</strong><br>Длина: ' + wl + ' см<br>Ширина: ' + ww + ' см (в готовом виде 2 см)</div>';
+    html += '<div class="info-block"><strong>Итого ткани:</strong><br><span class="value">' + (tl / 100).toFixed(2) + ' м</span><br><span style="font-size:14px;opacity:0.7;">при ширине ткани ' + ow + ' см</span></div>';
+    html += '<div class="info-block"><strong>Рекомендация:</strong><br><span style="font-size:15px;">Рекомендуется приобрести <span class="value">' + rec + ' м</span> ткани с запасом.</span></div>';
+    html += '<div class="info-block"><strong>При ширине 150 см:</strong><br>Длина: <span class="value">' + (results[2].length / 100).toFixed(2) + ' м</span> <span style="font-size:14px;opacity:0.7;">(' + results[2].layout + ')</span></div>';
+    html += '<div class="info-block"><strong>При ширине 90 см:</strong><br>Длина: <span class="value">' + (results[0].length / 100).toFixed(2) + ' м</span> <span style="font-size:14px;opacity:0.7;">(' + results[0].layout + ')</span></div>';
+    document.getElementById('fabricDetails').innerHTML = html;
+    document.getElementById('fabricInfo').style.display = 'block';
+  }
+  function updateRightPanel() {
+    if (!patternData) return;
+    var p = patternData, m = p.m;
+    var html = '<div class="dart-info"><h4> ✦ Основные параметры </h4><p><strong> Обхват талии:</strong> ' + m.waist + ' см <br><strong> Обхват бёдер:</strong> ' + m.hips + ' см <br><strong> Длина юбки:</strong> ' + m.length + ' см <br><strong> Глубина бёдер:</strong> ' + m.hipDepth + ' см<br><strong>Прибавка:</strong> ' + m.ease + ' см</p></div>';
+    html += '<div class="dart-info"><h4> ✦ Вытачки заднего полотнища </h4><p><strong> Общий раствор:</strong> <span class="highlight">' + p.backDartTotal_cm.toFixed(1) + ' см</span></p>';
+    for (var bi = 0; bi < p.backDarts.length; bi++) { var bd = p.backDarts[bi]; html += '<p style="margin-top:6px;padding-left:10px;border-left:2px solid var(--gold-light);"><strong>' + bd.name + ':</strong> ' + bd.width.toFixed(1) + ' см × ' + bd.length.toFixed(1) + ' см</p>'; }
+    html += '</div>';
+    if (p.sideDart) html += '<div class="dart-info"><h4> ✦ Боковая вытачка </h4><p><strong> Раствор:</strong> <span class="highlight">' + p.sideDartWidth_cm.toFixed(1) + ' см</span><br><strong> Глубина:</strong> ' + p.sideDart.length.toFixed(1) + ' см</p></div>';
+    html += '<div class="dart-info"><h4> ✦ Вытачки переднего полотнища </h4><p><strong> Общий раствор:</strong> <span class="highlight">' + p.frontDartTotal_cm.toFixed(1) + ' см</span></p>';
+    for (var fi = 0; fi < p.frontDarts.length; fi++) { var fd = p.frontDarts[fi]; html += '<p style="margin-top:6px;padding-left:10px;border-left:2px solid var(--gold-light);"><strong>' + fd.name + ':</strong> ' + fd.width.toFixed(1) + ' см × ' + fd.length.toFixed(1) + ' см</p>'; }
+    html += '</div>';
+    html += '<div class="dart-info"><h4> ✦ Конструкция </h4><p><strong> Ширина по бёдрам (¼):</strong> ' + (m.hips / 4 + m.ease / 2).toFixed(1) + ' см <br><strong> Ширина по талии (¼):</strong> ' + (m.waist / 4).toFixed(1) + ' см</p></div>';
+    if (p.needsExtraDart) html += '<div class="warning-box"><p><strong> ★ Большая разница талия/бёдра </strong><br> Разница составляет ' + p.totalDart.toFixed(1) + ' см (> 20 см). Рекомендуется 2 вытачки на заднем полотнище.</p></div>';
+    html += '<div class="ornament-divider">— ✦ — </div><div style="padding:12px; font-size:15px; color:var(--brown-light); line-height:1.7; font-style:italic;"> Методика «Мюллер и сын» обеспечивает точное построение конструкции юбки. При значительной разнице между талией и бёдрами рекомендуется добавление дополнительных вытачек.</div>';
+    document.getElementById('rightPanelContent').innerHTML = html;
+  }
+  function printPattern() {
+    if (!patternBuilt) buildPattern();
+    preparePrintPages();
+    var p = patternData;
+    var cols = Math.ceil(p.patternWidthMM / A4_CONTENT_W_MM);
+    var rows = Math.ceil(p.patternHeightMM / A4_CONTENT_H_MM);
+    var letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    var modalContent = '<p>Чертёж будет разделён на <strong>' + (cols * rows) + ' листов</strong> формата A4.</p>';
+    modalContent += '<p>Каждый лист имеет маркировку <strong>буква + число</strong> (например, A1, B2).</p>';
+    modalContent += '<p>По краям листов указаны обозначения соседних листов для стыковки.</p>';
+    modalContent += '<p style="font-size:16px;color:var(--burgundy);"><strong>Важно:</strong> При печати выберите масштаб <strong>100%</strong> (не «Вписать в страницу») и включите «Фоновая графика».</p>';
+    modalContent += '<div class="print-grid-info">';
+    for (var r = 0; r < rows; r++) {
+      for (var c = 0; c < cols; c++) {
+        var label = letters[c] + (r + 1);
+        var joins = [];
+        if (c > 0) joins.push('←' + letters[c - 1] + (r + 1));
+        if (c < cols - 1) joins.push('→' + letters[c + 1] + (r + 1));
+        if (r > 0) joins.push('↑' + letters[c] + r);
+        if (r < rows - 1) joins.push('↓' + letters[c] + (r + 2));
+        modalContent += '<div class="print-grid-cell"><div class="cell-label">' + label + '</div><div class="cell-joins">' + (joins.length > 0 ? joins.join('<br>') : '—') + '</div></div>';
+      }
+    }
+    modalContent += '</div>';
+    document.getElementById('printModalContent').innerHTML = modalContent;
+    document.getElementById('printModal').classList.add('show');
+  }
+  function doPrint() {
+    document.getElementById('printModal').classList.remove('show');
+    setTimeout(function() { window.print(); }, 300);
+  }
+
+  document.getElementById('btnBuild').addEventListener('click', buildPattern);
+  document.getElementById('btnFabric').addEventListener('click', calculateFabric);
+  document.getElementById('btnPrint').addEventListener('click', printPattern);
+  document.getElementById('btnZoomIn').addEventListener('click', zoomIn);
+  document.getElementById('btnZoomOut').addEventListener('click', zoomOut);
+  document.getElementById('btnReset').addEventListener('click', resetView);
+  document.getElementById('btnFit').addEventListener('click', fitToView);
+  document.getElementById('btnActual').addEventListener('click', actualSize);
+  document.getElementById('btnGrid').addEventListener('click', toggleGrid);
+  document.getElementById('btnCloseModal').addEventListener('click', function() { document.getElementById('printModal').classList.remove('show'); });
+  document.getElementById('btnDoPrint').addEventListener('click', doPrint);
+  svgContainer.addEventListener('mousedown', function(e) { if (e.button !== 0) return; isDragging = true; dragStartX = e.clientX; dragStartY = e.clientY; dragPanX = svgPanX; dragPanY = svgPanY; svgContainer.style.cursor = 'grabbing'; });
+  window.addEventListener('mousemove', function(e) { if (!isDragging) return; svgPanX = dragPanX + (e.clientX - dragStartX); svgPanY = dragPanY + (e.clientY - dragStartY); applyTransform(); });
+  window.addEventListener('mouseup', function() { isDragging = false; svgContainer.style.cursor = 'grab'; });
+  svgContainer.addEventListener('wheel', function(e) { e.preventDefault(); var delta = e.deltaY > 0 ? 0.9 : 1.1; var newZoom = Math.max(0.05, Math.min(5, svgZoom * delta)); var rect = svgContainer.getBoundingClientRect(); var mouseX = e.clientX - rect.left, mouseY = e.clientY - rect.top; svgPanX = mouseX - (mouseX - svgPanX) * (newZoom / svgZoom); svgPanY = mouseY - (mouseY - svgPanY) * (newZoom / svgZoom); svgZoom = newZoom; applyTransform(); }, { passive: false });
+  svgContainer.addEventListener('touchstart', function(e) { if (e.touches.length === 1) { isDragging = true; dragStartX = e.touches[0].clientX; dragStartY = e.touches[0].clientY; dragPanX = svgPanX; dragPanY = svgPanY; } else if (e.touches.length === 2) { isDragging = false; var dx = e.touches[0].clientX - e.touches[1].clientX, dy = e.touches[0].clientY - e.touches[1].clientY; lastTouchDist = Math.sqrt(dx * dx + dy * dy); } e.preventDefault(); }, { passive: false });
+  svgContainer.addEventListener('touchmove', function(e) { if (e.touches.length === 1 && isDragging) { svgPanX = dragPanX + (e.touches[0].clientX - dragStartX); svgPanY = dragPanY + (e.touches[0].clientY - dragStartY); applyTransform(); } else if (e.touches.length === 2) { var dx = e.touches[0].clientX - e.touches[1].clientX, dy = e.touches[0].clientY - e.touches[1].clientY, dist = Math.sqrt(dx * dx + dy * dy); if (lastTouchDist > 0) { svgZoom = Math.max(0.05, Math.min(5, svgZoom * dist / lastTouchDist)); applyTransform(); } lastTouchDist = dist; } e.preventDefault(); }, { passive: false });
+  svgContainer.addEventListener('touchend', function() { isDragging = false; lastTouchDist = 0; });
+  window.addEventListener('resize', function() { if (patternBuilt) fitToView(); });
+  buildPattern(); calculateFabric();
+})();
+</script>
+</body>
+</html>
